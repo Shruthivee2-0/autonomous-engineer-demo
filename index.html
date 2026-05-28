@@ -489,16 +489,17 @@ function draw(){
     const sphereScale = 0.6 + dShade * 0.5;
     const r = n.baseR * lerp(1.0, sphereScale, movEase);
 
-    // Alpha: visibly faint while scattered, ~100% when the orb settles.
-    // (0.55 floor is the threshold below which the 0.35 stroke disappears
-    // against white — at 0.30 the nodes vanished.)
+    // Alpha: fully opaque at scatter; depth-shaded once on the orb.
     const formedAlpha = 0.85 + dShade * 0.15;   // 0.85 (back) – 1.00 (front)
-    const alpha = lerp(0.55, formedAlpha, movEase);
+    const alpha = lerp(1.0, formedAlpha, movEase);
 
-    // Color: gray while scattered, team color as nodes settle onto the orb.
+    // Color: gray while scattered, team colour as nodes settle.
+    // Accelerated curve so the team colour becomes visible early in the
+    // movement rather than only near the end.
+    const tColor = Math.pow(movEase, 0.55);
     const neutral = COLS.neutral;
-    const baseFill   = mixHex(neutral.f, teamCol.f, movEase);
-    const baseStroke = mixHex(neutral.s, teamCol.s, movEase);
+    const baseFill   = mixHex(neutral.f, teamCol.f, tColor);
+    const baseStroke = mixHex(neutral.s, teamCol.s, tColor);
 
     // Slightly more saturated fill so colors read on small nodes too
     // (pastel fills wash out at small sizes against the white background).
