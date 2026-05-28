@@ -473,26 +473,8 @@ function draw(){
     return { x, y, depth: z3, n };
   });
 
-  // ── Stray connection hints during scattered phase ──────────
-  if(t < 0.55){
-    const strayAlpha = (1 - smoothstep(0.10, 0.55, t)) * 0.18;
-    if(strayAlpha > 0.005){
-      ctx.strokeStyle = `rgba(120,120,130,${strayAlpha})`;
-      ctx.lineWidth = 0.6;
-      for(let i = 0; i < pos.length; i++){
-        const j = (i * 7 + 3) % pos.length;
-        if(j === i) continue;
-        const dx = pos[i].x - pos[j].x;
-        const dy = pos[i].y - pos[j].y;
-        if(dx*dx + dy*dy < 220*220){
-          ctx.beginPath();
-          ctx.moveTo(pos[i].x, pos[i].y);
-          ctx.lineTo(pos[j].x, pos[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-  }
+  // No stray connection hints — opening shows nodes only, edges form
+  // as the user scrolls (via tEdge below).
 
   // ── Wireframe edges (depth-shaded, light gray, clipped to node edges) ──
   if(tEdge > 0.01){
