@@ -154,7 +154,6 @@
 <body>
 
 <canvas id="bg"></canvas>
-<div id="progress"></div>
 
 <div class="content">
   <section class="hero">
@@ -374,7 +373,6 @@ function updateProgress(){
   const total = r.height + vh;
   const into = vh - r.top;
   progress = clamp(into / total, 0, 1);
-  document.getElementById('progress').style.width = (progress * 100) + '%';
   // Play button fades in once the frame fill is essentially complete.
   const pb = document.querySelector('.play-btn');
   if (pb) pb.classList.toggle('visible', progress >= 0.94);
