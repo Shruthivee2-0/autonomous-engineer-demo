@@ -404,7 +404,9 @@ function buildNodes(){
     const isSecondary = !isPrimary && (i % 4 === 1);
 
     const a = srand(i, 1) * Math.PI * 2;
-    const rad = 0.32 + srand(i, 2) * 0.55;
+    // Higher minimum radius so the scatter leaves the centre clear for
+    // the hero heading + subtext rather than overlapping them.
+    const rad = 0.55 + srand(i, 2) * 0.40;
 
     return {
       px: p.px, py: p.py, pz: p.pz,
@@ -554,10 +556,11 @@ function draw(){
     const sphereScale = 0.6 + dShade * 0.5;
     const r = n.baseR * lerp(1.0, sphereScale, movEase);
 
-    // Alpha: faint while scattered, ~100% when the orb settles.
-    // Tiny residual depth attenuation on the back hemisphere only.
+    // Alpha: visibly faint while scattered, ~100% when the orb settles.
+    // (0.55 floor is the threshold below which the 0.35 stroke disappears
+    // against white — at 0.30 the nodes vanished.)
     const formedAlpha = 0.85 + dShade * 0.15;   // 0.85 (back) – 1.00 (front)
-    const alpha = lerp(0.30, formedAlpha, movEase);
+    const alpha = lerp(0.55, formedAlpha, movEase);
 
     // Slightly more saturated fill so colors read on small nodes too
     // (pastel fills wash out at small sizes against the white background).
