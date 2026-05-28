@@ -295,15 +295,23 @@ function buildNodes(){
     const isPrimary  = primaryIdx >= 0 && primaryIdx < PRIMARY_COUNT;
     const isSecondary = !isPrimary && (i % 4 === 1);
 
-    const a = srand(i, 1) * Math.PI * 2;
-    // Higher minimum radius so the scatter leaves the centre clear for
-    // the hero heading + subtext rather than overlapping them.
-    const rad = 0.55 + srand(i, 2) * 0.40;
+    // Lower min radius so nodes can sit beside the heading horizontally,
+    // with rejection sampling that pushes anything inside the text box
+    // back out (text box is approximate centred bounds of the hero copy).
+    const TEXT_BOX = { l: 0.27, r: 0.73, t: 0.30, b: 0.66 };
+    let a, rad, sx, sy;
+    for (let attempt = 0; attempt < 16; attempt++) {
+      a   = srand(i, 1 + attempt * 11) * Math.PI * 2;
+      rad = 0.30 + srand(i, 2 + attempt * 11) * 0.62;
+      sx  = 0.5 + Math.cos(a) * rad * SCATTER_X;
+      sy  = 0.5 + Math.sin(a) * rad * SCATTER_Y;
+      if (!(sx > TEXT_BOX.l && sx < TEXT_BOX.r &&
+            sy > TEXT_BOX.t && sy < TEXT_BOX.b)) break;
+    }
 
     return {
       px: p.px, py: p.py, pz: p.pz,
-      sx: 0.5 + Math.cos(a) * rad * SCATTER_X,
-      sy: 0.5 + Math.sin(a) * rad * SCATTER_Y,
+      sx, sy,
       fx: srand(i, 3) * Math.PI * 2,
       fy: srand(i, 4) * Math.PI * 2,
       baseR: isPrimary   ? 12 + srand(i, 5) * 4 :        // 12–16
