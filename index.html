@@ -495,17 +495,22 @@ function draw(){
     const formedAlpha = 0.85 + dShade * 0.15;   // 0.85 (back) – 1.00 (front)
     const alpha = lerp(0.55, formedAlpha, movEase);
 
+    // Color: gray while scattered, team color as nodes settle onto the orb.
+    const neutral = COLS.neutral;
+    const baseFill   = mixHex(neutral.f, teamCol.f, movEase);
+    const baseStroke = mixHex(neutral.s, teamCol.s, movEase);
+
     // Slightly more saturated fill so colors read on small nodes too
     // (pastel fills wash out at small sizes against the white background).
     const fillMix = n.tier === 0 ? 0.32 : (n.tier === 1 ? 0.18 : 0.10);
-    const fill = mixHex(teamCol.f, teamCol.s, fillMix);
+    const fill = mixHex(baseFill, baseStroke, fillMix);
 
     ctx.globalAlpha = alpha;
     ctx.beginPath();
     ctx.arc(x, y, Math.max(0.6, r), 0, Math.PI*2);
     ctx.fillStyle = fill;
     ctx.fill();
-    ctx.strokeStyle = teamCol.s;
+    ctx.strokeStyle = baseStroke;
     ctx.lineWidth = 0.35;
     ctx.stroke();
     ctx.globalAlpha = 1;
