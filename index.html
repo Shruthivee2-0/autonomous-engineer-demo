@@ -198,7 +198,7 @@ setCanvasSize();
 
 // ── Palette (warm mix: oranges + pinks + violet + amber) ──
 const COLS = {
-  neutral:  {f:'#f8f8fb', s:'#c4c4c9'},
+  neutral:  {f:'#ffffff', s:'#c4c4c9'},
   agent:    {f:'#fcd9c9', s:'#E0531F'},   // burnt orange (matches CTA)
   api:      {f:'#fee5d0', s:'#FB923C'},   // tangerine
   workflow: {f:'#fde5cf', s:'#F97316'},   // medium orange
@@ -327,6 +327,10 @@ function buildNodes(){
                            4  + srand(i, 5) * 1.8,       // 4–5.8
       c: isPrimary ? PRIMARY_COLS[primaryIdx] : CATS[(i * 3) % CATS.length],
       tier: isPrimary ? 2 : (isSecondary ? 1 : 0),
+      // ~20% of nodes are hidden at scatter (alpha=0) and fade in only
+      // as they move onto the orb — reduces opening density while
+      // keeping the orb itself dense. Never hide primaries.
+      hiddenAtScatter: !isPrimary && srand(i, 7) < 0.20,
     };
   });
   const edges = nearestNeighbourEdges(nodes, 5);
@@ -474,8 +478,8 @@ function draw(){
       if(!pa || !pb) return;
       const avgD = (pa.depth + pb.depth) * 0.5;
       const dShade = (avgD + 1) * 0.5;   // 0..1 (back..front)
-      const baseA = tEdge * (0.20 + dShade * 0.55);
-      ctx.strokeStyle = `rgba(185,165,230,${baseA})`;
+      const baseA = tEdge * (0.15 + dShade * 0.55);
+      ctx.strokeStyle = `rgba(170,175,190,${baseA})`;
       ctx.lineWidth = 0.55 + dShade * 0.35;
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
@@ -496,8 +500,10 @@ function draw(){
     const r = n.baseR * lerp(1.0, sphereScale, movEase);
 
     // Alpha: opaque at scatter; mild depth attenuation once on the orb.
+    // Hidden-at-scatter nodes start invisible and fade in with movement.
     const formedAlpha = 0.85 + dShade * 0.15;
-    const alpha = lerp(1.0, formedAlpha, movEase);
+    const scatterAlpha = n.hiddenAtScatter ? 0 : 1.0;
+    const alpha = lerp(scatterAlpha, formedAlpha, movEase);
 
     // Color: gray when scattered → pastel team fill + saturated stroke
     // when on the orb. Matches the look in the user's reference image.
