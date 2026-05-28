@@ -312,15 +312,15 @@ function setCanvasSize(){
 }
 setCanvasSize();
 
-// ── Palette (warm: oranges, coral, violet, amber — no pinks, greens or blues) ──
+// ── Palette (warm mix: oranges + pinks + violet + amber) ──
 const COLS = {
   neutral:  {f:'#f1f1f4', s:'#c4c4c9'},
   agent:    {f:'#fcd9c9', s:'#E0531F'},   // burnt orange (matches CTA)
   api:      {f:'#fee5d0', s:'#FB923C'},   // tangerine
   workflow: {f:'#fde5cf', s:'#F97316'},   // medium orange
-  incident: {f:'#ffe0d5', s:'#FF7E5F'},   // coral
+  incident: {f:'#fbd5e6', s:'#EC4899'},   // hot pink
   knowledge:{f:'#e0d4f8', s:'#8B5CF6'},   // violet
-  infra:    {f:'#feebd5', s:'#FDBA74'},   // light peach orange
+  infra:    {f:'#fce7f3', s:'#F472B6'},   // light pink
   observ:   {f:'#fbe9c4', s:'#F59E0B'},   // amber
 };
 const CATS = ['agent','api','workflow','knowledge','infra','observ','incident'];
@@ -392,7 +392,7 @@ function nearestNeighbourEdges(nodes, K){
 // visual hierarchy as the inspired context-graph animation: a few
 // large anchor nodes, a band of mediums, and a cloud of small dots.
 function buildNodes(){
-  const N = 90;   // slightly fewer nodes so each can be more visible
+  const N = 115;  // more nodes so the scatter halo around the hero feels denser
   const sphere = fibonacciSphere(N);
 
   // 8 primaries, spread evenly through the Fibonacci order
