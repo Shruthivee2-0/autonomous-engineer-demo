@@ -18,18 +18,28 @@
     height:100%;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     -webkit-font-smoothing:antialiased;
-    background:#ffffff;color:var(--text-1);line-height:1.5;
+    color:var(--text-1);line-height:1.5;
   }
-  body{overflow-x:hidden}
+  body{
+    overflow-x:hidden;
+    background:
+      radial-gradient(ellipse 70% 60% at 100% 0%, #F3EBFF 0%, transparent 70%),
+      radial-gradient(ellipse 70% 60% at 0% 100%, #F3EBFF 0%, transparent 70%),
+      radial-gradient(ellipse 70% 60% at 0% 0%, #FFF5F2 0%, transparent 70%),
+      radial-gradient(ellipse 70% 60% at 100% 100%, #FFF5F2 0%, transparent 70%),
+      #FFFFFF;
+    background-attachment:fixed;
+  }
 
   /* ── FULL-VIEWPORT FIXED CANVAS ───────────────────────────── */
+  /* No CSS background — canvas is transparent so the body gradient
+     shows through behind the nodes/edges/dot-grid. */
   #bg{
     position:fixed;
     inset:0;
     width:100vw;height:100vh;
     z-index:0;
     pointer-events:none;
-    background:#ffffff;
   }
 
   /* Layer everything else above the canvas */
@@ -452,9 +462,8 @@ function draw(){
   pulse++;
   const t = progress;
 
-  // ── Persistent light background ────────────────────────────
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, CW, CH);
+  // Transparent canvas — the body gradient shows through
+  ctx.clearRect(0, 0, CW, CH);
 
   // Dot grid
   ctx.fillStyle = 'rgba(17,17,17,0.04)';
