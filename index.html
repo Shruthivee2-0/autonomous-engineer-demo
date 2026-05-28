@@ -104,15 +104,18 @@
   /* ── SCROLL SPACER (gives the build room to play out) ───── */
   .spacer{height:220vh;pointer-events:none}
 
-  /* ── VIDEO SECTION (play button centered over the canvas frame) ── */
+  /* Video section is just a scroll buffer — the play button is a
+     fixed-position element pinned to viewport center, fading in once
+     the orb + frame sequence is complete. */
   .video-section{
     position:relative;
     width:100vw;
     min-height:100vh;
-    display:flex;align-items:center;justify-content:center;
-    padding:80px 24px;
   }
   .play-btn{
+    position:fixed;
+    top:50%;left:50%;
+    transform:translate(-50%, -50%);
     width:96px;height:96px;
     border-radius:50%;
     background:#ffffff;
@@ -120,10 +123,17 @@
     box-shadow:0 12px 32px rgba(17,17,17,0.10);
     display:flex;align-items:center;justify-content:center;
     cursor:pointer;color:#E0531F;
-    transition:transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s ease;
+    opacity:0;
+    pointer-events:none;
+    z-index:5;
+    transition:opacity .35s ease, transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s ease;
   }
-  .play-btn:hover{
-    transform:scale(1.08);
+  .play-btn.visible{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .play-btn.visible:hover{
+    transform:translate(-50%, -50%) scale(1.08);
     box-shadow:0 16px 42px rgba(224,83,31,0.20);
   }
   .play-btn svg{margin-left:5px}
@@ -169,12 +179,14 @@
 
   <div class="spacer"></div>
 
-  <section class="video-section">
-    <button class="play-btn" aria-label="Play walkthrough">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-    </button>
-  </section>
+  <section class="video-section"></section>
 </div>
+
+<!-- Play button is fixed to viewport center; fades in when scroll
+     progress completes (no slide-in, just opacity). -->
+<button class="play-btn" aria-label="Play walkthrough">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+</button>
 
 <script>
 // ── Canvas setup ─────────────────────────────────────────────
@@ -340,6 +352,9 @@ function updateProgress(){
   const into = vh - r.top;
   progress = clamp(into / total, 0, 1);
   document.getElementById('progress').style.width = (progress * 100) + '%';
+  // Play button fades in once the frame fill is essentially complete.
+  const pb = document.querySelector('.play-btn');
+  if (pb) pb.classList.toggle('visible', progress >= 0.94);
 }
 updateProgress();
 window.addEventListener('scroll', updateProgress, {passive:true});
