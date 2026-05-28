@@ -302,16 +302,16 @@ function setCanvasSize(){
 }
 setCanvasSize();
 
-// ── Palette (pastel team colors, like the inspired reference) ──
+// ── Palette (warm: pinks, oranges, violets, amber — no greens or blues) ──
 const COLS = {
   neutral:  {f:'#f1f1f4', s:'#c4c4c9'},
-  agent:    {f:'#dde6fa', s:'#4F7FE8'},
-  api:      {f:'#cdf2e2', s:'#10B981'},
-  workflow: {f:'#fde5cf', s:'#F97316'},
-  incident: {f:'#fbd5e6', s:'#EC4899'},
-  knowledge:{f:'#e0d4f8', s:'#8B5CF6'},
-  infra:    {f:'#cfeff5', s:'#06B6D4'},
-  observ:   {f:'#fbe9c4', s:'#F59E0B'},
+  agent:    {f:'#fad3e8', s:'#DB2777'},   // deep pink (replaces blue)
+  api:      {f:'#fce7f3', s:'#F472B6'},   // light pink (replaces green)
+  workflow: {f:'#fde5cf', s:'#F97316'},   // orange
+  incident: {f:'#fbd5e6', s:'#EC4899'},   // hot pink
+  knowledge:{f:'#e0d4f8', s:'#8B5CF6'},   // violet
+  infra:    {f:'#fed7dd', s:'#FB7185'},   // salmon pink (replaces cyan)
+  observ:   {f:'#fbe9c4', s:'#F59E0B'},   // amber
 };
 const CATS = ['agent','api','workflow','knowledge','infra','observ','incident'];
 
