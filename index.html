@@ -556,9 +556,10 @@ function draw(){
     const sphereScale = 0.6 + dShade * 0.5;
     const r = n.baseR * lerp(1.0, sphereScale, movEase);
 
-    // Alpha: opaque while scattered, depth-based when settled.
-    const sphereAlpha = 0.45 + dShade * 0.55;
-    const alpha = lerp(1.0, sphereAlpha, movEase);
+    // Alpha: faint while scattered, ~100% when the orb settles.
+    // Tiny residual depth attenuation on the back hemisphere only.
+    const formedAlpha = 0.85 + dShade * 0.15;   // 0.85 (back) – 1.00 (front)
+    const alpha = lerp(0.30, formedAlpha, movEase);
 
     // Slightly more saturated fill so colors read on small nodes too
     // (pastel fills wash out at small sizes against the white background).
@@ -571,7 +572,7 @@ function draw(){
     ctx.fillStyle = fill;
     ctx.fill();
     ctx.strokeStyle = teamCol.s;
-    ctx.lineWidth = n.tier === 2 ? 1.6 : (n.tier === 1 ? 1.2 : 0.9);
+    ctx.lineWidth = 0.35;
     ctx.stroke();
     ctx.globalAlpha = 1;
   });
