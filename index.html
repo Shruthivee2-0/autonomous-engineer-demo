@@ -410,8 +410,8 @@ function buildNodes(){
 
     return {
       px: p.px, py: p.py, pz: p.pz,
-      sx: 0.5 + Math.cos(a) * rad * SCATTER_F,
-      sy: 0.5 + Math.sin(a) * rad * SCATTER_F,
+      sx: 0.5 + Math.cos(a) * rad * SCATTER_X,
+      sy: 0.5 + Math.sin(a) * rad * SCATTER_Y,
       fx: srand(i, 3) * Math.PI * 2,
       fy: srand(i, 4) * Math.PI * 2,
       baseR: isPrimary   ? 12 + srand(i, 5) * 4 :        // 12–16
