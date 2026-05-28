@@ -507,7 +507,7 @@ function draw(){
     // Alpha: translucent at scatter (≈0.55), opaque on the orb with
     // mild depth attenuation. Hidden-at-scatter nodes start invisible.
     const formedAlpha = 0.85 + dShade * 0.15;
-    const scatterAlpha = n.hiddenAtScatter ? 0 : 0.55;
+    const scatterAlpha = n.hiddenAtScatter ? 0 : 0.30;
     const alpha = lerp(scatterAlpha, formedAlpha, movEase);
 
     ctx.globalAlpha = alpha;
