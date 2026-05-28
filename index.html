@@ -47,8 +47,8 @@
   .nav-links{display:flex;gap:24px;font-size:13px;color:var(--text-2)}
   .nav-links a{color:inherit;text-decoration:none}
   .nav-links a:hover{color:var(--text-1)}
-  .nav-cta{font-size:13px;font-weight:500;background:#111;color:#fff;padding:8px 14px;border-radius:7px;text-decoration:none;transition:background .15s}
-  .nav-cta:hover{background:#000}
+  .nav-cta{font-size:13px;font-weight:500;background:#E0531F;color:#fff;padding:8px 14px;border-radius:7px;text-decoration:none;transition:background .15s}
+  .nav-cta:hover{background:#C44419}
   @media (max-width:680px){.nav-links{display:none}}
 
   /* ── HERO ─────────────────────────────────────────────────── */
@@ -68,10 +68,7 @@
     font-size:64px;font-weight:600;letter-spacing:-0.03em;
     line-height:1.05;color:var(--text-1);margin-bottom:22px;
   }
-  .hero h1 .accent{
-    background:linear-gradient(135deg,#5B6EEA,#8B5CF6);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
+  .hero h1 .accent{color:inherit}
   .hero p{
     font-size:18px;color:var(--text-2);
     max-width:580px;margin:0 auto 32px;line-height:1.55;
@@ -82,8 +79,8 @@
     padding:12px 20px;border-radius:8px;border:none;cursor:pointer;
     transition:all .15s;text-decoration:none;display:inline-block;
   }
-  .btn-primary{background:#111;color:#fff}
-  .btn-primary:hover{background:#000;transform:translateY(-1px)}
+  .btn-primary{background:#E0531F;color:#fff}
+  .btn-primary:hover{background:#C44419;transform:translateY(-1px)}
   .btn-ghost{background:rgba(255,255,255,.7);color:var(--text-2);border:1px solid #e4e4e8;backdrop-filter:blur(4px)}
   .btn-ghost:hover{color:var(--text-1);border-color:#bbb}
   .scroll-cue{
@@ -256,7 +253,7 @@
   <section class="hero">
     <span class="eyebrow">Autonomous engineering · Private beta</span>
     <h1>The autonomous engineer<br/>for <span class="accent">your API workflows</span></h1>
-    <p>Disparate systems, scattered context, ad-hoc connections. Scroll — and watch them become a graph an agent can actually act on.</p>
+    <p>An always-on cloud-native agent that builds, tests, governs and scales APIs across the org.</p>
     <div class="hero-cta">
       <button class="btn btn-primary">Get early access</button>
       <button class="btn btn-ghost">See it in action ↓</button>
@@ -395,10 +392,12 @@ function buildNodes(){
   const PRIMARY_STEP = Math.floor(N / PRIMARY_COUNT);
   const PRIMARY_COLS = ['agent','api','workflow','knowledge','infra','observ','incident','agent'];
 
-  // Scatter factor kept small enough that even the outermost scatter
-  // position (rad max ≈ 0.85 * factor) stays inside [0.05, 0.95] in
-  // normalized coords — i.e. fully visible on any aspect ratio.
-  const SCATTER_F = 0.50;
+  // Spread the scatter across the full viewport width. On wide screens
+  // we deliberately let a fraction of nodes spill past the edges so the
+  // hero feels expansive rather than centred.
+  const aspect = CW / CH;
+  const SCATTER_X = aspect > 1 ? Math.min(aspect * 0.5, 0.95) : 0.55;
+  const SCATTER_Y = aspect < 1 ? Math.min((1/aspect) * 0.5, 0.95) : 0.55;
 
   const nodes = sphere.map((p, i) => {
     const primaryIdx = (i % PRIMARY_STEP === 0) ? Math.floor(i / PRIMARY_STEP) : -1;
