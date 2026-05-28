@@ -494,12 +494,11 @@ function draw(){
     const alpha = lerp(1.0, formedAlpha, movEase);
 
     // Color: every node fill crossfades from neutral gray to a
-    // medium-saturated team color as it moves. Uniform across tiers
-    // so all nodes pick up clear colour at the same rate.
+    // saturated team color as it moves. Uniform across all tiers.
     const tColor = Math.pow(movEase, 0.5);
     const neutral = COLS.neutral;
-    const teamMid   = mixHex(teamCol.f, teamCol.s, 0.42);
-    const fill      = mixHex(neutral.f, teamMid, tColor);
+    const teamFill   = mixHex(teamCol.f, teamCol.s, 0.65);  // strong, clearly chromatic
+    const fill       = mixHex(neutral.f, teamFill, tColor);
     const baseStroke = mixHex(neutral.s, teamCol.s, tColor);
 
     ctx.globalAlpha = alpha;
