@@ -493,16 +493,14 @@ function draw(){
     const formedAlpha = 0.85 + dShade * 0.15;
     const alpha = lerp(1.0, formedAlpha, movEase);
 
-    // Color: gray while scattered, team color as nodes settle.
-    // Per-tier fillMix matches the version the user wants — small dots
-    // get a stronger blend toward the saturated stroke so they read
-    // crisp, large anchors stay more pastel.
+    // Color: every node fill crossfades from neutral gray to a
+    // strong, clearly-saturated team color as it moves. Uniform across
+    // tiers so all nodes are obviously coloured at the orb.
     const tColor = Math.pow(movEase, 0.55);
     const neutral = COLS.neutral;
-    const baseFill   = mixHex(neutral.f, teamCol.f, tColor);
+    const fillTarget = mixHex(teamCol.f, teamCol.s, 0.80);
+    const fill = mixHex(neutral.f, fillTarget, tColor);
     const baseStroke = mixHex(neutral.s, teamCol.s, tColor);
-    const fillMix = n.tier === 0 ? 0.55 : (n.tier === 1 ? 0.38 : 0.24);
-    const fill = mixHex(baseFill, baseStroke, fillMix);
 
     ctx.globalAlpha = alpha;
     ctx.beginPath();
