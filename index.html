@@ -501,9 +501,10 @@ function draw(){
     const baseFill   = mixHex(neutral.f, teamCol.f, tColor);
     const baseStroke = mixHex(neutral.s, teamCol.s, tColor);
 
-    // Slightly more saturated fill so colors read on small nodes too
-    // (pastel fills wash out at small sizes against the white background).
-    const fillMix = n.tier === 0 ? 0.32 : (n.tier === 1 ? 0.18 : 0.10);
+    // Saturate the fill so the orb nodes read as clearly coloured.
+    // Smaller tiers get a stronger blend toward the saturated stroke
+    // colour because pastel fills disappear at small radii.
+    const fillMix = n.tier === 0 ? 0.55 : (n.tier === 1 ? 0.38 : 0.24);
     const fill = mixHex(baseFill, baseStroke, fillMix);
 
     ctx.globalAlpha = alpha;
