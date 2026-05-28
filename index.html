@@ -298,38 +298,56 @@ function buildNodes(){
   const SCATTER_X = aspect > 1 ? Math.min(aspect * 0.5, 0.95) : 0.55;
   const SCATTER_Y = aspect < 1 ? Math.min((1/aspect) * 0.5, 0.95) : 0.55;
 
+  // Two-pass rejection sampling for scatter positions: avoid the hero
+  // text box, and avoid overlapping previously-placed nodes so the
+  // opening reads as airy.
+  const TEXT_BOX = { l: 0.27, r: 0.73, t: 0.30, b: 0.66 };
+  const placed = [];   // [{sx, sy, rPx}] in normalized coords + radius in pixels
+
   const nodes = sphere.map((p, i) => {
     const primaryIdx = (i % PRIMARY_STEP === 0) ? Math.floor(i / PRIMARY_STEP) : -1;
     const isPrimary  = primaryIdx >= 0 && primaryIdx < PRIMARY_COUNT;
     const isSecondary = !isPrimary && (i % 4 === 1);
 
-    // Lower min radius so nodes can sit beside the heading horizontally,
-    // with rejection sampling that pushes anything inside the text box
-    // back out (text box is approximate centred bounds of the hero copy).
-    const TEXT_BOX = { l: 0.27, r: 0.73, t: 0.30, b: 0.66 };
+    const baseR = isPrimary   ? 12 + srand(i, 5) * 4 :
+                  isSecondary ? 7  + srand(i, 5) * 2 :
+                                4  + srand(i, 5) * 1.8;
+
     let a, rad, sx, sy;
-    for (let attempt = 0; attempt < 16; attempt++) {
+    const PADDING = 10;   // extra px gap between node edges
+    let chosen = false;
+    for (let attempt = 0; attempt < 60; attempt++) {
       a   = srand(i, 1 + attempt * 11) * Math.PI * 2;
       rad = 0.30 + srand(i, 2 + attempt * 11) * 0.62;
       sx  = 0.5 + Math.cos(a) * rad * SCATTER_X;
       sy  = 0.5 + Math.sin(a) * rad * SCATTER_Y;
-      if (!(sx > TEXT_BOX.l && sx < TEXT_BOX.r &&
-            sy > TEXT_BOX.t && sy < TEXT_BOX.b)) break;
+
+      // Reject if inside the text box.
+      if (sx > TEXT_BOX.l && sx < TEXT_BOX.r &&
+          sy > TEXT_BOX.t && sy < TEXT_BOX.b) continue;
+
+      // Reject if overlapping any previously placed node.
+      let overlaps = false;
+      for (const o of placed) {
+        const dx = (sx - o.sx) * CW;
+        const dy = (sy - o.sy) * CH;
+        if (dx*dx + dy*dy < (baseR + o.rPx + PADDING) ** 2) { overlaps = true; break; }
+      }
+      if (overlaps) continue;
+
+      chosen = true; break;
     }
+    // After 60 attempts, accept whatever last position we had.
+    placed.push({ sx, sy, rPx: baseR });
 
     return {
       px: p.px, py: p.py, pz: p.pz,
       sx, sy,
       fx: srand(i, 3) * Math.PI * 2,
       fy: srand(i, 4) * Math.PI * 2,
-      baseR: isPrimary   ? 12 + srand(i, 5) * 4 :        // 12–16
-             isSecondary ? 7  + srand(i, 5) * 2 :        // 7–9
-                           4  + srand(i, 5) * 1.8,       // 4–5.8
+      baseR,
       c: isPrimary ? PRIMARY_COLS[primaryIdx] : CATS[(i * 3) % CATS.length],
       tier: isPrimary ? 2 : (isSecondary ? 1 : 0),
-      // ~20% of nodes are hidden at scatter (alpha=0) and fade in only
-      // as they move onto the orb — reduces opening density while
-      // keeping the orb itself dense. Never hide primaries.
       hiddenAtScatter: !isPrimary && srand(i, 7) < 0.20,
     };
   });
@@ -471,7 +489,7 @@ function draw(){
     }
   }
 
-  // ── Wireframe edges (depth-shaded, light gray) ─────────────
+  // ── Wireframe edges (depth-shaded, light gray, clipped to node edges) ──
   if(tEdge > 0.01){
     G.edges.forEach(([a, b]) => {
       const pa = pos[a], pb = pos[b];
@@ -479,11 +497,28 @@ function draw(){
       const avgD = (pa.depth + pb.depth) * 0.5;
       const dShade = (avgD + 1) * 0.5;   // 0..1 (back..front)
       const baseA = tEdge * (0.15 + dShade * 0.55);
+
+      // Shrink the line so it stops at each node's boundary instead of
+      // passing through the (translucent) node disc.
+      const dShadeA = (pa.depth + 1) * 0.5;
+      const dShadeB = (pb.depth + 1) * 0.5;
+      const rA = pa.n.baseR * lerp(1.0, 0.6 + dShadeA * 0.5, movEase);
+      const rB = pb.n.baseR * lerp(1.0, 0.6 + dShadeB * 0.5, movEase);
+      const dx = pb.x - pa.x;
+      const dy = pb.y - pa.y;
+      const dist = Math.hypot(dx, dy);
+      if(dist < rA + rB + 1) return;        // nodes touch, skip
+      const ux = dx / dist, uy = dy / dist;
+      const x1 = pa.x + ux * rA;
+      const y1 = pa.y + uy * rA;
+      const x2 = pb.x - ux * rB;
+      const y2 = pb.y - uy * rB;
+
       ctx.strokeStyle = `rgba(170,175,190,${baseA})`;
       ctx.lineWidth = 0.55 + dShade * 0.35;
       ctx.beginPath();
-      ctx.moveTo(pa.x, pa.y);
-      ctx.lineTo(pb.x, pb.y);
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
       ctx.stroke();
     });
   }
@@ -504,10 +539,11 @@ function draw(){
     const fill       = teamCol.f;
     const baseStroke = teamCol.s;
 
-    // Alpha: translucent at scatter (≈0.55), opaque on the orb with
-    // mild depth attenuation. Hidden-at-scatter nodes start invisible.
-    const formedAlpha = 0.85 + dShade * 0.15;
-    const scatterAlpha = n.hiddenAtScatter ? 0 : 0.30;
+    // Alpha: translucent at scatter, fully opaque on the orb so the
+    // node bodies properly cover any wireframe edges passing behind.
+    // (Depth still reads via size scaling, no need to dim back nodes.)
+    const formedAlpha = 1.0;
+    const scatterAlpha = n.hiddenAtScatter ? 0 : 0.40;
     const alpha = lerp(scatterAlpha, formedAlpha, movEase);
 
     ctx.globalAlpha = alpha;
