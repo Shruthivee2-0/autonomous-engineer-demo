@@ -461,13 +461,11 @@ function draw(){
     }
 
   // ── Animation phases ───────────────────────────────────────
-  // 0.00 → 0.10 : floating scatter, neutral
-  // 0.10 → 0.85 : nodes drift onto the sphere
+  // 0.00 → 0.10 : coloured nodes float in scatter (already sized + tinted)
+  // 0.10 → 0.85 : nodes drift onto the sphere; depth shading layers in
   // 0.30 → 0.90 : wireframe edges fade in
-  // 0.55 → 1.00 : neutral fills/strokes crossfade to team colours
   const tMove  = smoothstep(0.10, 0.85, t);
   const tEdge  = smoothstep(0.30, 0.90, t);
-  const tColor = smoothstep(0.55, 1.00, t);
 
   const movEase = eio(tMove);
   const time = pulse * 0.012;
@@ -546,24 +544,24 @@ function draw(){
   // ── Nodes (sorted back-to-front so front overlaps back) ────
   const sorted = pos.slice().sort((a, b) => a.depth - b.depth);
   sorted.forEach(({x, y, depth, n}) => {
-    const dShade = (depth + 1) * 0.5;   // 0..1
-
-    const r = n.baseR * (0.75 + 0.45 * movEase) * (0.6 + dShade * 0.5);
+    const dShade = (depth + 1) * 0.5;   // 0..1 (back..front)
     const teamCol = COLS[n.c] || COLS.neutral;
 
-    // Pastel fill: neutral → team
-    const fill = mixHex(COLS.neutral.f, teamCol.f, tColor);
-    const stroke = mixHex(COLS.neutral.s, teamCol.s, tColor);
+    // Size: full baseR while scattered (so hierarchy reads immediately),
+    // depth-shaded sphere scale eases in as nodes settle.
+    const sphereScale = 0.6 + dShade * 0.5;
+    const r = n.baseR * lerp(1.0, sphereScale, movEase);
 
-    // Depth-based opacity — gives the 3D feel on a light background
-    const alpha = 0.45 + dShade * 0.55;
+    // Alpha: opaque while scattered, depth-based when settled.
+    const sphereAlpha = 0.45 + dShade * 0.55;
+    const alpha = lerp(1.0, sphereAlpha, movEase);
 
     ctx.globalAlpha = alpha;
     ctx.beginPath();
     ctx.arc(x, y, Math.max(0.6, r), 0, Math.PI*2);
-    ctx.fillStyle = fill;
+    ctx.fillStyle = teamCol.f;
     ctx.fill();
-    ctx.strokeStyle = stroke;
+    ctx.strokeStyle = teamCol.s;
     ctx.lineWidth = n.tier === 2 ? 1.5 : (n.tier === 1 ? 1.05 : 0.8);
     ctx.stroke();
     ctx.globalAlpha = 1;
