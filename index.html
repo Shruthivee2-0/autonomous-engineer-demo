@@ -489,17 +489,20 @@ function draw(){
     const sphereScale = 0.6 + dShade * 0.5;
     const r = n.baseR * lerp(1.0, sphereScale, movEase);
 
-    // Alpha: fully opaque at scatter; depth-shaded once on the orb.
-    const formedAlpha = 0.85 + dShade * 0.15;   // 0.85 (back) – 1.00 (front)
+    // Alpha: opaque at scatter; mild depth attenuation once on the orb.
+    const formedAlpha = 0.85 + dShade * 0.15;
     const alpha = lerp(1.0, formedAlpha, movEase);
 
-    // Color: every node fill crossfades from neutral gray to a
-    // saturated team color as it moves. Uniform across all tiers.
-    const tColor = Math.pow(movEase, 0.5);
+    // Color: gray while scattered, team color as nodes settle.
+    // Per-tier fillMix matches the version the user wants — small dots
+    // get a stronger blend toward the saturated stroke so they read
+    // crisp, large anchors stay more pastel.
+    const tColor = Math.pow(movEase, 0.55);
     const neutral = COLS.neutral;
-    const teamFill   = mixHex(teamCol.f, teamCol.s, 0.65);  // strong, clearly chromatic
-    const fill       = mixHex(neutral.f, teamFill, tColor);
+    const baseFill   = mixHex(neutral.f, teamCol.f, tColor);
     const baseStroke = mixHex(neutral.s, teamCol.s, tColor);
+    const fillMix = n.tier === 0 ? 0.55 : (n.tier === 1 ? 0.38 : 0.24);
+    const fill = mixHex(baseFill, baseStroke, fillMix);
 
     ctx.globalAlpha = alpha;
     ctx.beginPath();
