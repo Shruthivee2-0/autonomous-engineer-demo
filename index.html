@@ -414,8 +414,8 @@ function draw(){
   const movEase = eio(tMove);
   const time = pulse * 0.012;
 
-  rotY += 0.0015 + 0.0028 * tMove;
-  rotX = Math.sin(pulse * 0.0006) * 0.18;   // subtle wobble
+  rotY += 0.001125 + 0.0021 * tMove;        // 25% slower
+  rotX = Math.sin(pulse * 0.00045) * 0.18;  // subtle wobble (also 25% slower)
 
   const cx = CW / 2, cy = CH / 2;
 
