@@ -104,135 +104,32 @@
   /* ── SCROLL SPACER (gives the build room to play out) ───── */
   .spacer{height:220vh;pointer-events:none}
 
-  /* ── VIDEO CARD FLOATING OVER THE GRAPH ──────────────────── */
+  /* ── VIDEO SECTION (play button centered over the canvas frame) ── */
   .video-section{
     position:relative;
     width:100vw;
     min-height:100vh;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    display:flex;align-items:center;justify-content:center;
     padding:80px 24px;
-    background:transparent;  /* graph shows through */
-  }
-  .video-caption{
-    font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--indigo);
-    background:var(--indigo-soft);
-    padding:6px 12px;border-radius:999px;
-    margin-bottom:18px;
-  }
-  .video-title{
-    font-size:36px;font-weight:600;letter-spacing:-0.025em;line-height:1.15;
-    color:var(--text-1);
-    max-width:640px;text-align:center;
-    margin-bottom:28px;
-  }
-  .video-title .accent{
-    background:linear-gradient(135deg,#5B6EEA,#8B5CF6);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  /* Browser-window-style video frame floating over the graph */
-  .video-window{
-    position:relative;
-    width:min(1000px, 92vw);
-    border-radius:14px;
-    overflow:hidden;
-    background:#fff;
-    box-shadow:
-      0 40px 100px rgba(17,17,17,0.22),
-      0 16px 40px rgba(91,110,234,0.10),
-      0 0 0 1px rgba(17,17,17,0.06);
-    transition:transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
-  }
-  .video-window:hover{
-    transform:translateY(-3px);
-    box-shadow:
-      0 50px 120px rgba(17,17,17,0.26),
-      0 20px 48px rgba(91,110,234,0.16),
-      0 0 0 1px rgba(17,17,17,0.06);
-  }
-  .window-chrome{
-    display:flex;align-items:center;gap:14px;
-    padding:11px 14px;
-    background:#f4f4f6;
-    border-bottom:1px solid #e8e8ec;
-  }
-  .traffic-lights{display:flex;gap:7px;flex-shrink:0}
-  .traffic-lights span{
-    width:12px;height:12px;border-radius:50%;
-    box-shadow:inset 0 0 0 0.5px rgba(0,0,0,0.08);
-  }
-  .traffic-lights span:nth-child(1){background:#ff5f57}
-  .traffic-lights span:nth-child(2){background:#febc2e}
-  .traffic-lights span:nth-child(3){background:#28c840}
-  .url-bar{
-    flex:1;max-width:340px;margin:0 auto;
-    height:26px;border-radius:7px;
-    background:#fff;border:1px solid #e4e4e8;
-    display:flex;align-items:center;justify-content:center;gap:6px;
-    font-size:12px;color:#888;
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  }
-  .url-bar svg{flex-shrink:0;opacity:.55}
-  .window-spacer{width:54px;flex-shrink:0}  /* balance the traffic lights */
-  .window-body{
-    position:relative;
-    aspect-ratio:16/9;
-    background:
-      radial-gradient(circle at 30% 20%, rgba(91,110,234,.22), transparent 60%),
-      radial-gradient(circle at 80% 80%, rgba(139,92,246,.18), transparent 55%),
-      linear-gradient(180deg, #0b0c12 0%, #14151f 100%);
-    cursor:pointer;
-    overflow:hidden;
-  }
-  .window-body::after{
-    content:"";
-    position:absolute;inset:0;
-    background-image:
-      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-    background-size:48px 48px;
-    pointer-events:none;
-    mask-image:radial-gradient(circle at center, #000 35%, transparent 75%);
-    -webkit-mask-image:radial-gradient(circle at center, #000 35%, transparent 75%);
   }
   .play-btn{
-    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    width:88px;height:88px;border-radius:50%;
-    border:1px solid rgba(255,255,255,.22);
-    background:rgba(255,255,255,.08);
-    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    width:96px;height:96px;
+    border-radius:50%;
+    background:#ffffff;
+    border:1px solid rgba(180,180,195,0.4);
+    box-shadow:0 12px 32px rgba(17,17,17,0.10);
     display:flex;align-items:center;justify-content:center;
-    cursor:pointer;color:#fff;
-    transition:all .25s cubic-bezier(.4,0,.2,1);
-    z-index:2;
+    cursor:pointer;color:#E0531F;
+    transition:transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s ease;
   }
-  .play-btn::before{
-    content:"";
-    position:absolute;inset:-2px;border-radius:50%;
-    background:conic-gradient(from 180deg, #5B6EEA, #8B5CF6, #5B6EEA);
-    opacity:0;transition:opacity .25s;
-    z-index:-1;
-    filter:blur(16px);
+  .play-btn:hover{
+    transform:scale(1.08);
+    box-shadow:0 16px 42px rgba(224,83,31,0.20);
   }
-  .video-window:hover .play-btn{
-    background:rgba(255,255,255,.14);
-    border-color:rgba(255,255,255,.32);
-    transform:translate(-50%,-50%) scale(1.06);
-  }
-  .video-window:hover .play-btn::before{opacity:.7}
-  .play-btn svg{margin-left:4px}
-  .video-meta{
-    margin-top:22px;
-    font-size:13px;color:var(--text-3);
-    display:flex;align-items:center;gap:10px;
-  }
-  .video-meta::before, .video-meta::after{
-    content:"";display:inline-block;width:24px;height:1px;background:#e4e4e8;
-  }
+  .play-btn svg{margin-left:5px}
   @media (max-width:600px){
-    .video-title{font-size:24px;margin-bottom:22px}
-    .play-btn{width:64px;height:64px}
-    .play-btn svg{width:22px;height:22px}
+    .play-btn{width:72px;height:72px}
+    .play-btn svg{width:24px;height:24px}
   }
 
   /* ── PROGRESS BAR (subtle scroll indicator) ──────────────── */
@@ -273,24 +170,9 @@
   <div class="spacer"></div>
 
   <section class="video-section">
-    <div class="video-caption">When everything connects</div>
-    <h2 class="video-title">See Atlas act on the <span class="accent">context graph</span></h2>
-    <div class="video-window" role="button" tabindex="0" aria-label="Play walkthrough">
-      <div class="window-chrome">
-        <div class="traffic-lights"><span></span><span></span><span></span></div>
-        <div class="url-bar">
-          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V4.5a2.5 2.5 0 0 1 5 0V7"/></svg>
-          atlas.app/walkthrough
-        </div>
-        <div class="window-spacer"></div>
-      </div>
-      <div class="window-body">
-        <button class="play-btn" aria-label="Play video">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="video-meta">2 min walkthrough</div>
+    <button class="play-btn" aria-label="Play walkthrough">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </button>
   </section>
 </div>
 
@@ -474,21 +356,51 @@ function draw(){
     }
 
   // ── Animation phases ───────────────────────────────────────
-  // 0.00 → 0.10 : coloured nodes float in scatter (already sized + tinted)
-  // 0.10 → 0.85 : nodes drift onto the sphere; depth shading layers in
-  // 0.30 → 0.90 : wireframe edges fade in
-  const tMove  = smoothstep(0.10, 0.85, t);
-  const tEdge  = smoothstep(0.30, 0.90, t);
+  // 0.00 → 0.08 : coloured nodes float in scatter
+  // 0.08 → 0.70 : nodes drift onto the sphere; depth shading layers in
+  // 0.25 → 0.75 : wireframe edges fade in
+  // 0.70 → 0.88 : a rounded rectangle outlines the orb (the frame draws)
+  // 0.86 → 1.00 : the frame fills with light gray (becomes a container)
+  const tMove        = smoothstep(0.08, 0.70, t);
+  const tEdge        = smoothstep(0.25, 0.75, t);
+  const tFrameStroke = smoothstep(0.70, 0.88, t);
+  const tFrameFill   = smoothstep(0.86, 1.00, t);
 
   const movEase = eio(tMove);
   const time = pulse * 0.012;
 
-  // Sphere rotates continually — gentle while scattered, steady when formed.
   rotY += 0.0015 + 0.0028 * tMove;
   rotX = Math.sin(pulse * 0.0006) * 0.18;   // subtle wobble
 
   const cx = CW / 2, cy = CH / 2;
-  const sphereR = Math.min(CW, CH) * 0.36;
+
+  // ── Frame dimensions (rounded rectangle around the orb) ────
+  const fw = Math.min(CW * 0.85, 1100);
+  const fh = fw * 9 / 16;
+  const fx = cx - fw / 2;
+  const fy = cy - fh / 2;
+  const frameRadius = 18;
+
+  // Orb radius: shrink slightly as the frame appears so the orb sits
+  // comfortably inside it.
+  const baseSphereR   = Math.min(CW, CH) * 0.36;
+  const framedSphereR = Math.min(baseSphereR, fh * 0.40);
+  const sphereR = lerp(baseSphereR, framedSphereR, tFrameStroke);
+
+  // ── Draw frame (fill first, then stroke; both before orb) ──
+  if(tFrameFill > 0.01){
+    ctx.beginPath();
+    ctx.roundRect(fx, fy, fw, fh, frameRadius);
+    ctx.fillStyle = `rgba(240,240,243,${0.92 * tFrameFill})`;
+    ctx.fill();
+  }
+  if(tFrameStroke > 0.01){
+    ctx.beginPath();
+    ctx.roundRect(fx, fy, fw, fh, frameRadius);
+    ctx.strokeStyle = `rgba(170,170,185,${0.55 * tFrameStroke})`;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+  }
 
   const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
   const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
