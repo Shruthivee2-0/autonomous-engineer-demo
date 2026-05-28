@@ -548,7 +548,7 @@ function draw(){
     // node bodies properly cover any wireframe edges passing behind.
     // (Depth still reads via size scaling, no need to dim back nodes.)
     const formedAlpha = 1.0;
-    const scatterAlpha = n.hiddenAtScatter ? 0 : 0.40;
+    const scatterAlpha = n.hiddenAtScatter ? 0 : 0.50;
     const alpha = lerp(scatterAlpha, formedAlpha, movEase);
 
     ctx.globalAlpha = alpha;
