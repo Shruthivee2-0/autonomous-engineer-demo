@@ -314,11 +314,13 @@ function buildNodes(){
                                 4  + srand(i, 5) * 1.8;
 
     let a, rad, sx, sy;
-    const PADDING = 10;   // extra px gap between node edges
+    const PADDING = 14;   // extra px gap between node edges
     let chosen = false;
-    for (let attempt = 0; attempt < 60; attempt++) {
+    for (let attempt = 0; attempt < 120; attempt++) {
       a   = srand(i, 1 + attempt * 11) * Math.PI * 2;
-      rad = 0.30 + srand(i, 2 + attempt * 11) * 0.62;
+      // Push radius outward on later attempts so dense scatter regions
+      // have somewhere to go.
+      rad = 0.30 + srand(i, 2 + attempt * 11) * 0.62 + (attempt / 120) * 0.15;
       sx  = 0.5 + Math.cos(a) * rad * SCATTER_X;
       sy  = 0.5 + Math.sin(a) * rad * SCATTER_Y;
 
@@ -337,7 +339,10 @@ function buildNodes(){
 
       chosen = true; break;
     }
-    // After 60 attempts, accept whatever last position we had.
+
+    // Nodes that couldn't find an overlap-free spot at scatter get
+    // hidden until they move onto the orb — keeps the opening clean.
+    const cantPlace = !chosen;
     placed.push({ sx, sy, rPx: baseR });
 
     return {
@@ -348,7 +353,7 @@ function buildNodes(){
       baseR,
       c: isPrimary ? PRIMARY_COLS[primaryIdx] : CATS[(i * 3) % CATS.length],
       tier: isPrimary ? 2 : (isSecondary ? 1 : 0),
-      hiddenAtScatter: !isPrimary && srand(i, 7) < 0.20,
+      hiddenAtScatter: cantPlace || (!isPrimary && srand(i, 7) < 0.20),
     };
   });
   const edges = nearestNeighbourEdges(nodes, 5);
@@ -521,6 +526,24 @@ function draw(){
       ctx.lineTo(x2, y2);
       ctx.stroke();
     });
+
+    // Punch out the node areas from whatever's been drawn so far
+    // (edges + dot grid). This makes any line that happens to cross a
+    // non-endpoint node disappear inside that node's disc.
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    pos.forEach(({x, y, depth, n}) => {
+      const dS = (depth + 1) * 0.5;
+      const r = n.baseR * lerp(1.0, 0.6 + dS * 0.5, movEase);
+      // Hidden-at-scatter nodes shouldn't punch anything at scatter.
+      const punchAlpha = n.hiddenAtScatter ? movEase : 1.0;
+      if (punchAlpha <= 0.01) return;
+      ctx.globalAlpha = punchAlpha;
+      ctx.beginPath();
+      ctx.arc(x, y, Math.max(0.6, r), 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
   }
 
   // ── Nodes (sorted back-to-front so front overlaps back) ────
